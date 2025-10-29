@@ -1,6 +1,6 @@
-package com.casino.service;
+package com.casino.User.service;
 
-import com.casino.model.User;
+import com.casino.User.model.User;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
