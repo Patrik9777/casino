@@ -1,7 +1,7 @@
-package com.casino.controller;
+package com.casino.User.controller;
 
-import com.casino.model.User;
-import com.casino.service.UserService;
+import com.casino.User.model.User;
+import com.casino.User.service.UserService;
 import com.casino.view.LoginView;
 import com.casino.view.MainMenuView;
 
