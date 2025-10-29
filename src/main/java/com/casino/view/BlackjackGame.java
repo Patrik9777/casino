@@ -1,3 +1,7 @@
+package com.casino.view;
+
+import com.casino.model.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;

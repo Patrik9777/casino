@@ -1,3 +1,8 @@
+package com.casino.view;
+
+import com.casino.model.User;
+import com.casino.service.UserService;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -30,7 +35,7 @@ public class CasinoLoginFrame extends JFrame {
     private JLabel errorLabel;
     private int xMouse, yMouse;
 
-    private UserManager userManager = new UserManager();
+    private UserService userService = UserService.getInstance();
 
     public CasinoLoginFrame() {
         setUndecorated(true);
@@ -414,10 +419,11 @@ public class CasinoLoginFrame extends JFrame {
             return;
         }
         
-        if (userManager.login(username, password)) {
+        java.util.Optional<User> userOpt = userService.authenticateUser(username, password);
+        if (userOpt.isPresent()) {
             // Open main menu in the Event Dispatch Thread
             SwingUtilities.invokeLater(() -> {
-                MainMenuFrame mainMenu = new MainMenuFrame(userManager.getCurrentUser());
+                MainMenuFrame mainMenu = new MainMenuFrame(userOpt.get());
                 mainMenu.setVisible(true);
                 this.dispose(); // Close the login window
             });
@@ -567,15 +573,17 @@ public class CasinoLoginFrame extends JFrame {
                 return;
             }
             
-            if (userManager.registerUser(username, password, email)) {
+            if (userService.registerUser(username, password, email)) {
                 dialog.dispose();
                 // Automatikus bejelentkezés
-                userManager.login(username, password);
-                SwingUtilities.invokeLater(() -> {
-                    MainMenuFrame mainMenu = new MainMenuFrame(userManager.getCurrentUser());
-                    mainMenu.setVisible(true);
-                    CasinoLoginFrame.this.dispose();
-                });
+                java.util.Optional<User> userOpt = userService.authenticateUser(username, password);
+                if (userOpt.isPresent()) {
+                    SwingUtilities.invokeLater(() -> {
+                        MainMenuFrame mainMenu = new MainMenuFrame(userOpt.get());
+                        mainMenu.setVisible(true);
+                        CasinoLoginFrame.this.dispose();
+                    });
+                }
             } else {
                 regErrorLabel.setText("Ez a felhasználónév már foglalt!");
                 Timer timer = new Timer(3000, evt -> regErrorLabel.setText(""));

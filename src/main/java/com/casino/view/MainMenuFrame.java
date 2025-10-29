@@ -1,3 +1,7 @@
+package com.casino.view;
+
+import com.casino.model.User;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;

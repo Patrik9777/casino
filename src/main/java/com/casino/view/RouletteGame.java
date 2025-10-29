@@ -1,3 +1,7 @@
+package com.casino.view;
+
+import com.casino.model.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -95,7 +99,7 @@ public class RouletteGame extends JDialog {
         JButton zeroButton = createNumberButton(0, GREEN_COLOR);
         numberPanel.add(zeroButton);
         
-        // Add numbers 1-36
+        // Add numbers 1-36 in order
         for (int i = 1; i <= 36; i++) {
             Color color = isRed(i) ? RED_COLOR : BLACK_COLOR;
             JButton numButton = createNumberButton(i, color);
@@ -268,7 +272,7 @@ public class RouletteGame extends JDialog {
     private class RouletteWheel extends JPanel {
         private double rotation = 0;
         private Timer spinTimer;
-        private int targetNumber;
+        private int targetNumber = -1;
         private Runnable callback;
         
         public RouletteWheel() {
@@ -319,7 +323,7 @@ public class RouletteGame extends JDialog {
             
             int centerX = getWidth() / 2;
             int centerY = getHeight() / 2;
-            int radius = Math.min(getWidth(), getHeight()) / 2 - 10;
+            int radius = Math.min(getWidth(), getHeight()) / 2 - 5; // Nagyobb kerék
             
             // Draw wheel segments in proper roulette order
             double angleStep = 360.0 / 37.0;
@@ -341,27 +345,53 @@ public class RouletteGame extends JDialog {
                     startAngle, angleStep, Arc2D.PIE
                 ));
                 
-                // Draw number
+                // Draw number - nagyobb és közelebb a szélhez
                 g2d.setColor(Color.WHITE);
-                g2d.setFont(new Font("SansSerif", Font.BOLD, 10));
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 14)); // Nagyobb betűméret
                 double midAngle = Math.toRadians(startAngle + angleStep / 2);
-                int textX = (int) (centerX + Math.cos(midAngle) * radius * 0.7);
-                int textY = (int) (centerY - Math.sin(midAngle) * radius * 0.7);
+                int textX = (int) (centerX + Math.cos(midAngle) * radius * 0.85); // Közelebb a szélhez
+                int textY = (int) (centerY - Math.sin(midAngle) * radius * 0.85);
                 String numStr = String.valueOf(number);
                 FontMetrics fm = g2d.getFontMetrics();
                 g2d.drawString(numStr, textX - fm.stringWidth(numStr) / 2, textY + fm.getAscent() / 2);
             }
             
-            // Draw center circle
-            g2d.setColor(GOLD_COLOR);
-            int centerRadius = 20;
-            g2d.fillOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
-            
-            // Draw pointer at top
-            g2d.setColor(Color.WHITE);
-            int[] xPoints = {centerX, centerX - 10, centerX + 10};
-            int[] yPoints = {centerY - radius + 5, centerY - radius + 20, centerY - radius + 20};
+            // Draw pointer at top - EXTRA NAGY felfelé mutató nyíl (ELŐSZÖR!)
+            g2d.setColor(new Color(255, 215, 0)); // Világos arany
+            int arrowWidth = 50; // Nagyon széles nyíl
+            int arrowHeight = 60; // Nagyon magas nyíl
+            int[] xPoints = {centerX, centerX - arrowWidth, centerX + arrowWidth};
+            int[] yPoints = {centerY - radius - 20, centerY - radius - arrowHeight - 20, centerY - radius - arrowHeight - 20};
             g2d.fillPolygon(xPoints, yPoints, 3);
+            
+            // Vastag fehér keret a nyílnak
+            g2d.setColor(Color.WHITE);
+            g2d.setStroke(new BasicStroke(5));
+            g2d.drawPolygon(xPoints, yPoints, 3);
+            
+            // Nagy piros pont a nyíl hegyén (mutatja hova mutat)
+            g2d.setColor(Color.RED);
+            g2d.fillOval(centerX - 12, centerY - radius - 30, 24, 24);
+            g2d.setColor(Color.WHITE);
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawOval(centerX - 12, centerY - radius - 30, 24, 24);
+            
+            // Draw center circle (UTOLSÓNAK!)
+            g2d.setColor(GOLD_COLOR);
+            int centerRadius = 25;
+            g2d.fillOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
+            g2d.setColor(Color.WHITE);
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawOval(centerX - centerRadius, centerY - centerRadius, centerRadius * 2, centerRadius * 2);
+            
+            // Szám kiírása a középre (ha van targetNumber)
+            if (targetNumber >= 0) {
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font("SansSerif", Font.BOLD, 18));
+                String numStr = String.valueOf(targetNumber);
+                FontMetrics fm = g2d.getFontMetrics();
+                g2d.drawString(numStr, centerX - fm.stringWidth(numStr) / 2, centerY + fm.getAscent() / 2 - 2);
+            }
         }
     }
 }
