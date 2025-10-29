@@ -4,10 +4,6 @@ import com.casino.Card.model.Card;
 import jakarta.persistence.*;
 import lombok.*;
 
-/**
- * User Entity - Spring Boot kompatibilis
- * @Entity annotációval JPA-hoz használható
- */
 @Entity
 @Builder
 @Getter
@@ -22,7 +18,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    @OneToOne
+    @OneToOne(optional = true)
     @JoinColumn(name = "card_id")
     private Card card;
     private Integer balance;
