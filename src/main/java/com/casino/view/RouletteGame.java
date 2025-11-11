@@ -1,6 +1,6 @@
 package com.casino.view;
 
-import com.casino.model.User;
+import com.casino.models.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -215,13 +215,13 @@ public class RouletteGame extends JDialog {
                 JOptionPane.showMessageDialog(this, "A tétnek legalább $1-nak kell lennie!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (bet > currentUser.getBalance()) {
-                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.getBalance(), "Hiba", JOptionPane.ERROR_MESSAGE);
+            if (bet > currentUser.balance) {
+                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.balance, "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            currentUser.setBalance(currentUser.getBalance() - bet);
-            balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+            currentUser.balance = (currentUser.balance - bet);
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             
             spinButton.setEnabled(false);
             
@@ -244,13 +244,13 @@ public class RouletteGame extends JDialog {
             }
             
                 if (won) {
-                    currentUser.setBalance(currentUser.getBalance() + winAmount);
+                    currentUser.balance =(currentUser.balance + winAmount);
                     JOptionPane.showMessageDialog(this, "Nyertél $" + winAmount + "!", "Gratulálunk!", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Vesztettél!", "Sajnos", JOptionPane.INFORMATION_MESSAGE);
                 }
                 
-                balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+                balanceLabel.setText("Egyenleg: $" + currentUser.balance);
                 clearSelection();
                 spinButton.setEnabled(true);
             });

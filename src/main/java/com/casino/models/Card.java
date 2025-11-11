@@ -1,6 +1,5 @@
-package com.casino.Card.model;
+package com.casino.models;
 
-import com.casino.User.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +15,7 @@ public class Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     private int number;
     private Date validDate;

@@ -1,0 +1,26 @@
+Üdv, itt van pár jegyzet ami lehet segíteni fog.
+
+FELESLEGES csinálni all könyvtárakat/packageket.
+Lásd: jelenlegi felállás.
+
+Backend:
+Jelenleg minden service alatt futt, ezt át kellene tenni controllerekbe
+NE használj semmit a view-ből mert nem a tiéd!
+Mindenféle logika magába a fájlba kell lenni.
+Példa: login/register átváltás view-ba NINCS benne, csak a registrálás/login logika.
+
+
+UI:
+HA használsz sok helyen megadott stílusu gombot/text-et, csinálj rá classt!
+Példa: buttons.CommonFancyButton
+
+Frame, Dialog, Panel-ek legyenek külön!
+
+
+Inspiráció és egyéb:
+https://github.dev/DanielMichalski/spring-boot-java-swing-reservations
+
+
+Több kérdést Discord, vagy github issue-ba dobj nekem.
+
+- pchMate

@@ -1,6 +1,6 @@
 package com.casino.view;
 
-import com.casino.model.User;
+import com.casino.models.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -210,12 +210,12 @@ public class LottoGame extends JDialog {
                 JOptionPane.showMessageDialog(this, "A tétnek legalább $1-nak kell lennie!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (bet > currentUser.getBalance()) {
-                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.getBalance(), "Hiba", JOptionPane.ERROR_MESSAGE);
+            if (bet > currentUser.balance) {
+                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.balance, "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            currentUser.setBalance(currentUser.getBalance() - bet);
+            currentUser.balance =(currentUser.balance - bet);
             
             // Generate winning numbers
             Set<Integer> winningNumbers = new HashSet<>();
@@ -258,10 +258,10 @@ public class LottoGame extends JDialog {
             }
             
             if (winAmount > 0) {
-                currentUser.setBalance(currentUser.getBalance() + winAmount);
+                currentUser.balance = (currentUser.balance + winAmount);
             }
             
-            balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             
             JOptionPane.showMessageDialog(this, message, "Eredmény", JOptionPane.INFORMATION_MESSAGE);
             clearSelection();

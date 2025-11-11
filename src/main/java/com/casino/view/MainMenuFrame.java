@@ -1,6 +1,6 @@
 package com.casino.view;
 
-import com.casino.model.User;
+import com.casino.models.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -100,12 +100,12 @@ public class MainMenuFrame extends JFrame {
         userInfoPanel.setOpaque(false);
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
         
-        userLabel = new JLabel("Üdv, " + currentUser.getUsername() + "!");
+        userLabel = new JLabel("Üdv, " + currentUser.username + "!");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         userLabel.setForeground(TEXT_COLOR);
         userLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         
-        balanceLabel = new JLabel("Egyenleg: $" + currentUser.getBalance());
+        balanceLabel = new JLabel("Egyenleg: $" + currentUser.balance);
         balanceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         balanceLabel.setForeground(GOLD_COLOR);
         balanceLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -257,7 +257,7 @@ public class MainMenuFrame extends JFrame {
         JLabel nicknameLabel = new JLabel("Becenév:");
         nicknameLabel.setForeground(TEXT_COLOR);
         nicknameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        JTextField nicknameField = createStyledTextField(currentUser.getUsername());
+        JTextField nicknameField = createStyledTextField(currentUser.username);
         formPanel.add(nicknameLabel);
         formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(nicknameField);
@@ -265,7 +265,7 @@ public class MainMenuFrame extends JFrame {
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setForeground(TEXT_COLOR);
         emailLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        JTextField emailField = createStyledTextField(currentUser.getEmail());
+        JTextField emailField = createStyledTextField(currentUser.email);
         emailField.setEditable(false);
         formPanel.add(emailLabel);
         formPanel.add(Box.createVerticalStrut(10));
@@ -276,8 +276,9 @@ public class MainMenuFrame extends JFrame {
         saveButton.addActionListener(e -> {
             String newNickname = nicknameField.getText().trim();
             if (!newNickname.isEmpty()) {
-                currentUser.setUsername(newNickname);
-                userLabel.setText("Üdv, " + currentUser.getUsername() + "!");
+                currentUser.username = newNickname;
+
+                userLabel.setText("Üdv, " + currentUser.username + "!");
                 JOptionPane.showMessageDialog(this, "Profil sikeresen frissítve!", "Siker", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "A becenév nem lehet üres!", "Hiba", JOptionPane.ERROR_MESSAGE);
@@ -413,8 +414,8 @@ public class MainMenuFrame extends JFrame {
                 bonus = couponCodes.get(couponCode);
                 amount += bonus;
             }
-            currentUser.setBalance(currentUser.getBalance() + amount);
-            balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+            currentUser.balance = (currentUser.balance + amount);
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             String message = "Sikeres befizetés: $" + (amount - bonus);
             if (bonus > 0) {
                 message += "\n🎉 Bónusz: $" + bonus + "\nÖsszesen: $" + amount;
@@ -458,7 +459,7 @@ public class MainMenuFrame extends JFrame {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         formPanel.add(titleLabel);
         formPanel.add(Box.createVerticalStrut(30));
-        JLabel currentBalanceLabel = new JLabel("Jelenlegi egyenleg: $" + currentUser.getBalance());
+        JLabel currentBalanceLabel = new JLabel("Jelenlegi egyenleg: $" + currentUser.balance);
         currentBalanceLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         currentBalanceLabel.setForeground(TEXT_COLOR);
         currentBalanceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -482,13 +483,13 @@ public class MainMenuFrame extends JFrame {
                     JOptionPane.showMessageDialog(this, "Az összegnek pozitívnak kell lennie!", "Hiba", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                if (amount > currentUser.getBalance()) {
+                if (amount > currentUser.balance) {
                     JOptionPane.showMessageDialog(this, "Nincs elég egyenleged!", "Hiba", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                currentUser.setBalance(currentUser.getBalance() - amount);
-                balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
-                currentBalanceLabel.setText("Jelenlegi egyenleg: $" + currentUser.getBalance());
+                currentUser.balance =  (currentUser.balance - amount);
+                balanceLabel.setText("Egyenleg: $" + currentUser.balance);
+                currentBalanceLabel.setText("Jelenlegi egyenleg: $" + currentUser.balance);
                 JOptionPane.showMessageDialog(this, "Sikeres kifizetés: $" + amount, "Siker", JOptionPane.INFORMATION_MESSAGE);
                 amountField.setText("");
             } catch (NumberFormatException ex) {
@@ -683,12 +684,5 @@ public class MainMenuFrame extends JFrame {
     private void showLottoGame() {
         new LottoGame(this, currentUser, balanceLabel);
     }
-    
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User testUser = new User("TestUser", "password", "test@casino.com");
-            testUser.setBalance(1000);
-            new MainMenuFrame(testUser);
-        });
-    }
+
 }
