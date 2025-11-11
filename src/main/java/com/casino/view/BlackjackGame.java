@@ -1,6 +1,6 @@
 package com.casino.view;
 
-import com.casino.model.User;
+import com.casino.models.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -175,14 +175,14 @@ public class BlackjackGame extends JDialog {
                 JOptionPane.showMessageDialog(this, "A tétnek legalább $1-nak kell lennie!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (bet > currentUser.getBalance()) {
-                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.getBalance(), "Hiba", JOptionPane.ERROR_MESSAGE);
+            if (bet > currentUser.balance) {
+                JOptionPane.showMessageDialog(this, "Nincs elég egyenleged! Jelenlegi egyenleg: $" + currentUser.balance, "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
             // Levonás a tétből
-            currentUser.setBalance(currentUser.getBalance() - bet);
-            balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+            currentUser.balance = (currentUser.balance - bet);
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             
             playerCards.clear();
             dealerCards.clear();
@@ -234,19 +234,19 @@ public class BlackjackGame extends JDialog {
         
         if (dealerScore > 21) {
             endGame("Az osztó túllépte a 21-et! Nyertél!");
-            currentUser.setBalance(currentUser.getBalance() + bet * 2); // Visszakapja + nyeremény
+            currentUser.balance = (currentUser.balance + bet * 2); // Visszakapja + nyeremény
         } else if (playerScore > dealerScore) {
             endGame("Nyertél!");
-            currentUser.setBalance(currentUser.getBalance() + bet * 2); // Visszakapja + nyeremény
+            currentUser.balance = (currentUser.balance + bet * 2); // Visszakapja + nyeremény
         } else if (playerScore < dealerScore) {
             endGame("Vesztettél!");
             // Nem kap vissza semmit, már levonva
         } else {
             endGame("Döntetlen!");
-            currentUser.setBalance(currentUser.getBalance() + bet); // Visszakapja a tétet
+            currentUser.balance = (currentUser.balance + bet); // Visszakapja a tétet
         }
         
-        balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+        balanceLabel.setText("Egyenleg: $" + currentUser.balance);
     }
     
     private void endGame(String message) {
