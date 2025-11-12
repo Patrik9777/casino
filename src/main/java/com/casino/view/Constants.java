@@ -15,6 +15,7 @@ public final class Constants {
     public static final Color FIELD_BG = new Color(40, 40, 45);
     public static final Color FIELD_BORDER = new Color(100, 90, 70);
     public static final Color LINK_COLOR = new Color(218, 165, 32);
+    public static final Color SIDEBAR_COLOR = new Color(25, 25, 30);
     public static final BasicStroke THIN_STROKE = new BasicStroke(1.5f);
     public static final BasicStroke MEDIUM_STROKE = new BasicStroke(2.5f);
     public static final float[] DASH_PATTERN = {5, 5};

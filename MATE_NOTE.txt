@@ -24,3 +24,8 @@ https://github.dev/DanielMichalski/spring-boot-java-swing-reservations
 Több kérdést Discord, vagy github issue-ba dobj nekem.
 
 - pchMate
+
+
+TODO:
+- Minden "Game" fájlt átkonvertálni al-panelekre.
+- Service-ekhez controllert (CrashGameService mehet simán controllerbe)

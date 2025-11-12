@@ -1,6 +1,14 @@
-package com.casino.view;
+package com.casino.view.frames;
 
+import com.casino.view.CrashGame;
+import com.casino.view.LottoGame;
+import com.casino.view.RouletteGame;
+import com.casino.view.dialogs.*;
+import com.casino.Main;
 import com.casino.models.User;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +18,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
+@org.springframework.stereotype.Component
+@Getter
 public class MainMenuFrame extends JFrame {
     private static final Color BACKGROUND_COLOR = new Color(20, 20, 25);
     private static final Color PANEL_COLOR = new Color(30, 30, 35);
@@ -29,11 +39,20 @@ public class MainMenuFrame extends JFrame {
     private JLabel userLabel;
     private JPanel contentPanel;
     private Map<String, Integer> couponCodes;
-    
-    public MainMenuFrame(User user) {
-        this.currentUser = user;
+
+    @Autowired
+    private BlackjackGameDialog blackjackGameDialog;
+
+    @PostConstruct
+    private void initPanel() {
         initializeCouponCodes();
         initializeUI();
+    }
+
+    public void setUser(User user) {
+        currentUser = user;
+        userLabel.setText("Üdv, " + currentUser.username + "!");
+        balanceLabel.setText("Egyenleg: $" + currentUser.balance);
     }
     
     private void initializeCouponCodes() {
@@ -82,7 +101,7 @@ public class MainMenuFrame extends JFrame {
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         setContentPane(mainPanel);
-        setVisible(true);
+        //setVisible(true);
     }
     
     private JPanel createHeaderPanel() {
@@ -100,12 +119,12 @@ public class MainMenuFrame extends JFrame {
         userInfoPanel.setOpaque(false);
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
         
-        userLabel = new JLabel("Üdv, " + currentUser.username + "!");
+        userLabel = new JLabel("Üdv, _ !");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         userLabel.setForeground(TEXT_COLOR);
         userLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
         
-        balanceLabel = new JLabel("Egyenleg: $" + currentUser.balance);
+        balanceLabel = new JLabel("Egyenleg: $0");
         balanceLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         balanceLabel.setForeground(GOLD_COLOR);
         balanceLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -193,7 +212,7 @@ public class MainMenuFrame extends JFrame {
             int choice = JOptionPane.showConfirmDialog(this, "Biztosan ki szeretnél jelentkezni?", "Kijelentkezés", JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.YES_OPTION) {
                 this.dispose();
-                SwingUtilities.invokeLater(() -> new CasinoLoginFrame().setVisible(true));
+                SwingUtilities.invokeLater(() -> Main.loginFrame.setVisible(true));
             }
         } else if (menuItem.contains("Kilépés")) {
             int choice = JOptionPane.showConfirmDialog(this, "Biztosan ki szeretnél lépni?", "Kilépés", JOptionPane.YES_NO_OPTION);
@@ -670,7 +689,7 @@ public class MainMenuFrame extends JFrame {
     }
     
     private void showBlackjackGame() {
-        new BlackjackGame(this, currentUser, balanceLabel);
+        blackjackGameDialog.setup(this, currentUser, balanceLabel);
     }
     
     private void showRouletteGame() {

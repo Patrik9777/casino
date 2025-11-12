@@ -15,59 +15,39 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository repository;
-    private static Integer nextId = 1;
 
-    public void initializeTestData() {
+    /**
+     * create new User
+     */
+    public User createNew(String username, String email, String password) {
         User testUser = new User();
-        testUser.id = nextId++;
-        testUser.username = "test1";
-        testUser.email = "user1@example.com";
-        testUser.password = "jelszo123";
+        testUser.username = username;
+        testUser.email =email;
+        testUser.password = password;
         testUser.balance = 1000;
         repository.save(testUser);
+        return testUser;
     }
 
     /**
-     * Register new user
+     * Find User by ID
      */
-    public Optional<User> registerUser(String username, String password, String email) {
-
-        var foundUser = repository.findByUsernameAndPassword(username, password);
-        if (foundUser.isPresent())
-            return Optional.empty();
-        User newUser = new User();
-        newUser.id = nextId++;
-        newUser.username = username;
-        newUser.email = email;
-        newUser.password = password;
-        newUser.balance = 1000;
-        repository.save(newUser);
-        return Optional.of(newUser);
+    public Optional<User> findUser(Integer id) {
+        return repository.findById(id);
     }
 
     /**
-     * Authenticate user
+     * Find User by UserName and password
      */
-    public Optional<User> authenticateUser(String username, String password) {
-        Optional<User> user = repository.findByUsername(username);
-        if (user.isPresent() && user.get().password.equals(password)) {
-            return user;
-        }
-        return Optional.empty();
+    public Optional<User> findUser(String username, String password) {
+        return repository.findByUsernameAndPassword(username, password);
     }
 
     /**
-     * Find user by username
+     * Save user
      */
-    public Optional<User> findByUsername(String username) {
-        return Optional.empty();
-    }
-
-    /**
-     * Check if username exists
-     */
-    public boolean existsByUsername(String username) {
-        return false;
+    public void saveUser(User user) {
+        repository.save(user);
     }
 
     /**
@@ -82,30 +62,9 @@ public class UserService {
     }
 
     /**
-     * Add balance to user
+     * Remove user
      */
-    public boolean addBalance(Integer id, int amount) {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            User realUser = user.get();
-            realUser.balance += amount;
-            repository.save(realUser);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Deduct balance from user
-     */
-    public boolean deductBalance(Integer id, int amount) {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            User realUser = user.get();
-            realUser.balance -= amount;
-            repository.save(realUser);
-            return true;
-        }
-        return false;
+    public void removeUser(User user) {
+        repository.delete(user);
     }
 }

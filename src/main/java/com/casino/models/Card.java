@@ -17,12 +17,12 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int number;
-    private Date validDate;
-    private String ownerName;
-    private int cvc;
+    public int number;
+    public Date validDate;
+    public String ownerName;
+    public int cvc;
 
     @OneToOne(mappedBy = "card")
-    private User user;
+    public User user;
 }
 

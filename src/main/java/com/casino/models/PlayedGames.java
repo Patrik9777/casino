@@ -16,10 +16,10 @@ public class PlayedGames {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    public User user;
 
-    private String gameName;
-    private int betAmount;
-    private int winAmount;
+    public String gameName;
+    public int betAmount;
+    public int winAmount;
 }
 

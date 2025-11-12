@@ -1,15 +1,14 @@
-package com.casino.view;
+package com.casino.view.old;
 
 import com.casino.models.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class BlackjackGame extends JDialog {
+public class BlackjackGame_old extends JDialog {
     private static final Color BACKGROUND_COLOR = new Color(20, 40, 20);
     private static final Color PANEL_COLOR = new Color(30, 60, 30);
     private static final Color TEXT_COLOR = new Color(230, 200, 150);
@@ -31,7 +30,7 @@ public class BlackjackGame extends JDialog {
     private int bet = 0;
     private Random random = new Random();
     
-    public BlackjackGame(JFrame parent, User user, JLabel balanceLabel) {
+    public BlackjackGame_old(JFrame parent, User user, JLabel balanceLabel) {
         super(parent, "🎴 Blackjack", true);
         this.currentUser = user;
         this.balanceLabel = balanceLabel;

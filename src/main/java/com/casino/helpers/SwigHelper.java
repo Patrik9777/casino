@@ -7,6 +7,17 @@ import java.awt.*;
 
 public final class SwigHelper {
 
+    public static JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
+        button.setBackground(new Color(218, 165, 32));
+        button.setForeground(Color.BLACK);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setPreferredSize(new Dimension(120, 40));
+        return button;
+    }
+
     public static void styleTextField(JTextField field) {
         field.setBackground(Constants.FIELD_BG);
         field.setForeground(Color.WHITE);

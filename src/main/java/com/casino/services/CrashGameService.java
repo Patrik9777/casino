@@ -1,4 +1,4 @@
-package com.casino.service;
+package com.casino.services;
 
 import java.util.Random;
 
