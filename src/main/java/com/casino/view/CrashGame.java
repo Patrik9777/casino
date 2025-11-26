@@ -1,6 +1,6 @@
 package com.casino.view;
 
-import com.casino.model.User;
+import com.casino.models.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -249,17 +249,17 @@ public class CrashGame extends JDialog {
                 return;
             }
             
-            if (bet > currentUser.getBalance()) {
+            if (bet > currentUser.balance) {
                 JOptionPane.showMessageDialog(this, 
-                    "Nincs elég egyenleged!\nJelenlegi egyenleg: $" + currentUser.getBalance(), 
+                    "Nincs elég egyenleged!\nJelenlegi egyenleg: $" + currentUser.balance,
                     "Nincs elég pénz", 
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
             currentBet = bet;
-            currentUser.setBalance(currentUser.getBalance() - bet);
-            balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+            currentUser.balance = (currentUser.balance - bet);
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             
             hasBet = true;
             betButton.setEnabled(false);
@@ -312,8 +312,8 @@ public class CrashGame extends JDialog {
         gameTimer.stop();
         
         int winAmount = (int) (currentBet * currentMultiplier);
-        currentUser.setBalance(currentUser.getBalance() + winAmount);
-        balanceLabel.setText("Egyenleg: $" + currentUser.getBalance());
+        currentUser.balance = (currentUser.balance + winAmount);
+        balanceLabel.setText("Egyenleg: $" + currentUser.balance);
         
         int profit = winAmount - currentBet;
         String result = String.format("✓ %.2fx → +$%d", currentMultiplier, profit);
