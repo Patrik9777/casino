@@ -24,7 +24,7 @@ public class UserService {
         testUser.username = username;
         testUser.email =email;
         testUser.password = password;
-        testUser.balance = 1000;
+        testUser.balance = 0;
         repository.save(testUser);
         return testUser;
     }

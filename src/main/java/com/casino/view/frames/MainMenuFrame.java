@@ -478,6 +478,9 @@ public class MainMenuFrame extends JFrame {
         try {
             currentUser.card = cardService.saveOrUpdateCard(currentUser, cardNumber, cardHolderName, cvc);
             return true;
+        } catch (IllegalStateException dupEx) {
+            JOptionPane.showMessageDialog(this, dupEx.getMessage(), "Hiba", JOptionPane.ERROR_MESSAGE);
+            return false;
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Nem sikerült elmenteni a kártyát: " + ex.getMessage(), "Hiba", JOptionPane.ERROR_MESSAGE);
             return false;
