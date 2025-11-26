@@ -3,8 +3,6 @@ package com.casino.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Entity
 @Builder
 @Getter
@@ -17,12 +15,19 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    public int number;
-    public Date validDate;
-    public String ownerName;
-    public int cvc;
+    @Column(name = "card_number", nullable = false, length = 24)
+    private String cardNumber;
+
+    @Column(name = "number", nullable = false, length = 24)
+    private String legacyNumber;
+
+    @Column(name = "owner_name", nullable = false, length = 128)
+    private String ownerName;
+
+    @Column(name = "cvc", nullable = false, length = 4)
+    private String cvc;
 
     @OneToOne(mappedBy = "card")
-    public User user;
+    private User user;
 }
 

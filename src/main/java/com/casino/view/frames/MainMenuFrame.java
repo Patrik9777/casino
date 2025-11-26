@@ -6,6 +6,8 @@ import com.casino.view.RouletteGame;
 import com.casino.view.dialogs.*;
 import com.casino.Main;
 import com.casino.models.User;
+import com.casino.services.CardService;
+import com.casino.services.UserService;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,12 @@ public class MainMenuFrame extends JFrame {
 
     @Autowired
     private BlackjackGameDialog blackjackGameDialog;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CardService cardService;
 
     @PostConstruct
     private void initPanel() {
@@ -369,6 +377,7 @@ public class MainMenuFrame extends JFrame {
         formPanel.add(cvcLabel);
         formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(cvcPanel);
+        prefillSavedCardData(cardNumberField, cardHolderField, cvcField);
         formPanel.add(Box.createVerticalStrut(15));
         JLabel amountLabel = new JLabel("Befizetendő összeg ($):");
         amountLabel.setForeground(TEXT_COLOR);
@@ -396,10 +405,13 @@ public class MainMenuFrame extends JFrame {
         formPanel.add(couponField);
         formPanel.add(Box.createVerticalStrut(5));
         formPanel.add(couponInfoLabel);
+        formPanel.add(Box.createVerticalStrut(15));
+        JCheckBox saveCardCheckbox = createStyledCheckbox("Kártya mentése");
+        formPanel.add(saveCardCheckbox);
         formPanel.add(Box.createVerticalStrut(25));
         JButton depositButton = createStyledButton("Befizetés", new Color(50, 150, 50));
         depositButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        depositButton.addActionListener(e -> processDeposit(cardNumberField, cardHolderField, cvcField, amountField, couponField));
+        depositButton.addActionListener(e -> processDeposit(cardNumberField, cardHolderField, cvcField, amountField, couponField, saveCardCheckbox));
         formPanel.add(depositButton);
         centerPanel.add(formPanel);
         depositPanel.add(centerPanel, BorderLayout.CENTER);
@@ -408,21 +420,26 @@ public class MainMenuFrame extends JFrame {
         contentPanel.repaint();
     }
     
-    private void processDeposit(JTextField cardNumberField, JTextField cardHolderField, JTextField cvcField, JTextField amountField, JTextField couponField) {
+    private void processDeposit(JTextField cardNumberField, JTextField cardHolderField, JTextField cvcField,
+                                JTextField amountField, JTextField couponField, JCheckBox saveCardCheckbox) {
         try {
-            if (cardNumberField.getText().length() != 20) {
+            String cardNumber = sanitizeDigits(cardNumberField.getText());
+            String cardHolder = sanitizeText(cardHolderField.getText());
+            String cvc = sanitizeDigits(cvcField.getText());
+
+            if (cardNumber.length() != 20) {
                 JOptionPane.showMessageDialog(this, "A kártyaszámnak pontosan 20 számjegyből kell állnia!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (cardHolderField.getText().trim().isEmpty()) {
+            if (cardHolder.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Kérlek add meg a kártyatulajdonos nevét!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (cvcField.getText().length() != 3) {
+            if (cvc.length() != 3) {
                 JOptionPane.showMessageDialog(this, "A CVC kódnak 3 számjegyből kell állnia!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int amount = Integer.parseInt(amountField.getText());
+            int amount = Integer.parseInt(amountField.getText().trim());
             if (amount <= 0) {
                 JOptionPane.showMessageDialog(this, "Az összegnek pozitívnak kell lennie!", "Hiba", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -434,20 +451,70 @@ public class MainMenuFrame extends JFrame {
                 amount += bonus;
             }
             currentUser.balance = (currentUser.balance + amount);
-            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             String message = "Sikeres befizetés: $" + (amount - bonus);
             if (bonus > 0) {
                 message += "\n🎉 Bónusz: $" + bonus + "\nÖsszesen: $" + amount;
             }
+            boolean cardSaved = false;
+            if (saveCardCheckbox.isSelected()) {
+                cardSaved = saveCardForCurrentUser(cardNumber, cardHolder, cvc);
+                if (cardSaved) {
+                    message += "\n💾 Kártya elmentve.";
+                }
+            }
+            userService.saveUser(currentUser);
+            balanceLabel.setText("Egyenleg: $" + currentUser.balance);
             JOptionPane.showMessageDialog(this, message, "Siker", JOptionPane.INFORMATION_MESSAGE);
-            cardNumberField.setText("");
-            cardHolderField.setText("");
-            cvcField.setText("");
-            amountField.setText("");
-            couponField.setText("");
+            resetDepositFields(cardNumberField, cardHolderField, cvcField, amountField, couponField, saveCardCheckbox);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Érvénytelen összeg!", "Hiba", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private boolean saveCardForCurrentUser(String cardNumber, String cardHolderName, String cvc) {
+        if (currentUser == null) {
+            return false;
+        }
+        try {
+            currentUser.card = cardService.saveOrUpdateCard(currentUser, cardNumber, cardHolderName, cvc);
+            return true;
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Nem sikerült elmenteni a kártyát: " + ex.getMessage(), "Hiba", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    private void prefillSavedCardData(JTextField cardNumberField, JTextField cardHolderField, JTextField cvcField) {
+        if (currentUser != null && currentUser.card != null) {
+            String savedCardNumber = currentUser.card.getCardNumber();
+            String savedOwner = currentUser.card.getOwnerName();
+            String savedCvc = currentUser.card.getCvc();
+            cardNumberField.setText(savedCardNumber != null ? savedCardNumber : "");
+            cardHolderField.setText(savedOwner != null ? savedOwner : "");
+            cvcField.setText(savedCvc != null ? savedCvc : "");
+        }
+    }
+
+    private void resetDepositFields(JTextField cardNumberField, JTextField cardHolderField, JTextField cvcField,
+                                    JTextField amountField, JTextField couponField, JCheckBox saveCardCheckbox) {
+        amountField.setText("");
+        couponField.setText("");
+        saveCardCheckbox.setSelected(false);
+        if (currentUser != null && currentUser.card != null) {
+            prefillSavedCardData(cardNumberField, cardHolderField, cvcField);
+        } else {
+            cardNumberField.setText("");
+            cardHolderField.setText("");
+            cvcField.setText("");
+        }
+    }
+
+    private String sanitizeDigits(String value) {
+        return value == null ? "" : value.replaceAll("\\D", "");
+    }
+
+    private String sanitizeText(String value) {
+        return value == null ? "" : value.trim();
     }
     
     private void showWithdrawContent() {
@@ -492,7 +559,12 @@ public class MainMenuFrame extends JFrame {
         formPanel.add(amountLabel);
         formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(amountField);
-        formPanel.add(Box.createVerticalStrut(30));
+        formPanel.add(Box.createVerticalStrut(15));
+        JButton withdrawAllButton = createStyledButton("Összes kivétele", new Color(60, 120, 200));
+        withdrawAllButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        withdrawAllButton.addActionListener(e -> amountField.setText(String.valueOf(currentUser.balance)));
+        formPanel.add(withdrawAllButton);
+        formPanel.add(Box.createVerticalStrut(15));
         JButton withdrawButton = createStyledButton("Kifizetés", new Color(150, 50, 50));
         withdrawButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         withdrawButton.addActionListener(e -> {
@@ -509,6 +581,7 @@ public class MainMenuFrame extends JFrame {
                 currentUser.balance =  (currentUser.balance - amount);
                 balanceLabel.setText("Egyenleg: $" + currentUser.balance);
                 currentBalanceLabel.setText("Jelenlegi egyenleg: $" + currentUser.balance);
+                userService.saveUser(currentUser);
                 JOptionPane.showMessageDialog(this, "Sikeres kifizetés: $" + amount, "Siker", JOptionPane.INFORMATION_MESSAGE);
                 amountField.setText("");
             } catch (NumberFormatException ex) {
@@ -554,6 +627,16 @@ public class MainMenuFrame extends JFrame {
         });
         
         return field;
+    }
+
+    private JCheckBox createStyledCheckbox(String text) {
+        JCheckBox checkBox = new JCheckBox(text);
+        checkBox.setOpaque(false);
+        checkBox.setForeground(TEXT_COLOR);
+        checkBox.setFont(new Font("SansSerif", Font.BOLD, 14));
+        checkBox.setFocusPainted(false);
+        checkBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return checkBox;
     }
     
     private JButton createStyledButton(String text, Color baseColor) {

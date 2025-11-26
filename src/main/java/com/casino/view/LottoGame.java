@@ -124,11 +124,15 @@ public class LottoGame extends JDialog {
         JButton clearButton = createButton("Törlés");
         clearButton.addActionListener(e -> clearSelection());
         
+        JButton closeModalButton = createButton("Bezárás");
+        closeModalButton.addActionListener(e -> dispose());
+        
         controlPanel.add(betLabel);
         controlPanel.add(betField);
         controlPanel.add(playButton);
         controlPanel.add(randomButton);
         controlPanel.add(clearButton);
+        controlPanel.add(closeModalButton);
         
         mainPanel.add(headerPanel, BorderLayout.NORTH);
         mainPanel.add(infoPanel, BorderLayout.PAGE_START);
